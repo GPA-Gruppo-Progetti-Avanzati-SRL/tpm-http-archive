@@ -1,7 +1,7 @@
 package filetracer
 
 import (
-	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-har/hartracing"
+	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-http-archive/hartracing"
 	"github.com/rs/zerolog/log"
 	"time"
 )

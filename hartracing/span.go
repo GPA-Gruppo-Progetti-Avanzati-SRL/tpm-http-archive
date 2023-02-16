@@ -1,7 +1,7 @@
 package hartracing
 
 import (
-	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-har/har"
+	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-http-archive/har"
 )
 
 const (

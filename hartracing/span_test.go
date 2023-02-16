@@ -1,10 +1,10 @@
 package hartracing_test
 
 import (
-	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-har/har"
-	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-har/hartracing"
-	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-har/hartracing/filetracer"
-	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-har/hartracing/logzerotracer"
+	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-http-archive/har"
+	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-http-archive/hartracing"
+	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-http-archive/hartracing/filetracer"
+	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-http-archive/hartracing/logzerotracer"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/require"

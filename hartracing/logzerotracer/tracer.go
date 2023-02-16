@@ -3,8 +3,8 @@ package logzerotracer
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-har/hartracing"
-	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-har/hartracing/util"
+	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-http-archive/hartracing"
+	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-http-archive/hartracing/util"
 	"github.com/rs/zerolog/log"
 	"io"
 	"strings"

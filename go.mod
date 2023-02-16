@@ -1,4 +1,4 @@
-module github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-har
+module github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-http-archive
 
 go 1.19
 

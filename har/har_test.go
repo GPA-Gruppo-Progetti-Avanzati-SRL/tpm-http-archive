@@ -2,7 +2,7 @@ package har_test
 
 import (
 	"encoding/json"
-	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-har/har"
+	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-http-archive/har"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/require"
