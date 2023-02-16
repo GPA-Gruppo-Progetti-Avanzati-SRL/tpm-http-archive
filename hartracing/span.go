@@ -4,16 +4,6 @@ import (
 	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-http-archive/har"
 )
 
-const (
-	HARTraceIdHeaderName = "har-trace-id"
-)
-
-type Tracer interface {
-	StartSpan(opts ...SpanOption) Span
-	Extract(format string, tmr TextMapReader) (SpanContext, error)
-	Inject(s SpanContext, tmr TextMapWriter) error
-}
-
 type SpanContext interface {
 	Id() string
 }
