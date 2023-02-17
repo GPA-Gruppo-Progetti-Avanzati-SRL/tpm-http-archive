@@ -189,7 +189,8 @@ func TestFileTracer(t *testing.T) {
 		"Content-type": []string{"application/json"},
 	}
 
-	tracer, c := filetracer.NewTracer("")
+	tracer, c, err := filetracer.NewTracer()
+	require.NoError(t, err)
 	defer c.Close()
 
 	// the extraction should fail. the header is not there

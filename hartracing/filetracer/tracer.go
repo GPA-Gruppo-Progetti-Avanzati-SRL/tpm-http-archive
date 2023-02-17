@@ -2,6 +2,7 @@ package filetracer
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-http-archive/har"
 	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-http-archive/hartracing"
@@ -25,10 +26,15 @@ type tracerImpl struct {
 	outCh        chan *har.HAR
 }
 
-func NewTracer(folder string) (hartracing.Tracer, io.Closer) {
+func NewTracer() (hartracing.Tracer, io.Closer, error) {
 
+	const semLogContext = "file-har-tracer::new"
+
+	folder := os.Getenv(TargetFolderEnvName)
 	if folder == "" {
-		folder = os.Getenv(TargetFolderEnvName)
+		msg := semLogContext + " - to properly use the tracer need to set the relevant env-var with desired target folder"
+		log.Warn().Str("env-var", TargetFolderEnvName).Msg(msg)
+		return nil, nil, errors.New(msg)
 	}
 
 	if folder == "" {
@@ -37,7 +43,7 @@ func NewTracer(folder string) (hartracing.Tracer, io.Closer) {
 
 	t := &tracerImpl{targetFolder: folder, outCh: make(chan *har.HAR, 10)}
 	go t.processLoop()
-	return t, t
+	return t, t, nil
 }
 
 func (t *tracerImpl) Close() error {
