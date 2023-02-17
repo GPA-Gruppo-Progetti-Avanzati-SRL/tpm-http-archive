@@ -21,6 +21,9 @@ func SetGlobalTracer(t Tracer) {
 }
 
 func GlobalTracer() Tracer {
+	if globalTracer == nil {
+		globalTracer, _ = NilTracer()
+	}
 	return globalTracer
 }
 

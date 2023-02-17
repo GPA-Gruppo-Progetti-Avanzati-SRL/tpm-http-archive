@@ -21,6 +21,7 @@ const (
 
 type tracerImpl struct {
 	targetFolder string
+	done         bool
 	outCh        chan *har.HAR
 }
 
@@ -40,7 +41,15 @@ func NewTracer(folder string) (hartracing.Tracer, io.Closer) {
 }
 
 func (t *tracerImpl) Close() error {
+
+	const semLogContext = "file-har-tracer::close"
+
 	close(t.outCh)
+	for !t.done {
+		time.Sleep(1 * time.Second)
+	}
+
+	log.Info().Msg(semLogContext + " closed")
 	return nil
 }
 
@@ -123,6 +132,7 @@ func (t *tracerImpl) processLoop() error {
 	}
 
 	log.Info().Msg(semLogContext + " ending loop")
+	t.done = true
 	return nil
 }
 

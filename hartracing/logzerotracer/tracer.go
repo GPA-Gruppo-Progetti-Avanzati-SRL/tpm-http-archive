@@ -11,19 +11,19 @@ import (
 	"time"
 )
 
-type tracerImpl struct {
+type logZeroTracerImpl struct {
 }
 
 func NewTracer() (hartracing.Tracer, io.Closer) {
-	t := &tracerImpl{}
+	t := &logZeroTracerImpl{}
 	return t, t
 }
 
-func (t *tracerImpl) Close() error {
+func (t *logZeroTracerImpl) Close() error {
 	return nil
 }
 
-func (t *tracerImpl) StartSpan(opts ...hartracing.SpanOption) hartracing.Span {
+func (t *logZeroTracerImpl) StartSpan(opts ...hartracing.SpanOption) hartracing.Span {
 	const semLogContext = "log-zero-har-tracer::start-har-span"
 
 	spanOpts := hartracing.SpanOptions{}
@@ -43,7 +43,7 @@ func (t *tracerImpl) StartSpan(opts ...hartracing.SpanOption) hartracing.Span {
 		}
 	}
 
-	span := spanImpl{
+	span := logZeroSpanImpl{
 		hartracing.SimpleSpan{
 			Tracer:      t,
 			SpanContext: spanCtx,
@@ -54,7 +54,7 @@ func (t *tracerImpl) StartSpan(opts ...hartracing.SpanOption) hartracing.Span {
 	return &span
 }
 
-func (t *tracerImpl) Report(s *spanImpl) error {
+func (t *logZeroTracerImpl) Report(s *logZeroSpanImpl) error {
 	const semLogContext = "log-zero-har-tracer::report"
 
 	h, err := s.GetHARData()
@@ -74,7 +74,7 @@ func (t *tracerImpl) Report(s *spanImpl) error {
 	return nil
 }
 
-func (t *tracerImpl) Extract(format string, tmr hartracing.TextMapReader) (hartracing.SpanContext, error) {
+func (t *logZeroTracerImpl) Extract(format string, tmr hartracing.TextMapReader) (hartracing.SpanContext, error) {
 
 	var spanContext hartracing.SimpleSpanContext
 	err := tmr.ForeachKey(func(key, val string) error {
@@ -94,7 +94,7 @@ func (t *tracerImpl) Extract(format string, tmr hartracing.TextMapReader) (hartr
 	return spanContext, err
 }
 
-func (t *tracerImpl) Inject(s hartracing.SpanContext, tmr hartracing.TextMapWriter) error {
+func (t *logZeroTracerImpl) Inject(s hartracing.SpanContext, tmr hartracing.TextMapWriter) error {
 	tmr.Set(hartracing.HARTraceIdHeaderName, s.Id())
 	return nil
 }
