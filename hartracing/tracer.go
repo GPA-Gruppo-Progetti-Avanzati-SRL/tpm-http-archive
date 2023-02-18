@@ -30,3 +30,11 @@ func GlobalTracer() Tracer {
 func ContextWithSpan(ctx context.Context, span Span) context.Context {
 	return context.WithValue(ctx, HARTraceIdHeaderName, span)
 }
+
+func SpanFromContext(ctx context.Context) Span {
+	val := ctx.Value(HARTraceIdHeaderName)
+	if sp, ok := val.(Span); ok {
+		return sp
+	}
+	return nil
+}
