@@ -150,7 +150,7 @@ func TestLogZeroTracer(t *testing.T) {
 		"Content-type": []string{"application/json"},
 	}
 
-	tracer, _ := logzerotracer.NewTracer()
+	tracer, _, _ := logzerotracer.NewTracer()
 
 	// the extraction should fail. the header is not there
 	sctx, err := tracer.Extract("", hartracing.HTTPHeadersCarrier(headers))

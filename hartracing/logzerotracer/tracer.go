@@ -14,9 +14,9 @@ import (
 type logZeroTracerImpl struct {
 }
 
-func NewTracer() (hartracing.Tracer, io.Closer) {
+func NewTracer() (hartracing.Tracer, io.Closer, error) {
 	t := &logZeroTracerImpl{}
-	return t, t
+	return t, t, nil
 }
 
 func (t *logZeroTracerImpl) Close() error {
