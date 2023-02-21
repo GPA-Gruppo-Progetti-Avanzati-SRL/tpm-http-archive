@@ -25,22 +25,44 @@ type tracerImpl struct {
 	outCh        chan *har.HAR
 }
 
-func NewTracer() (hartracing.Tracer, io.Closer, error) {
+type tracerOpts struct {
+	folder string
+}
+
+type Option func(opts *tracerOpts)
+
+func WithFolder(t string) Option {
+	return func(opts *tracerOpts) {
+		opts.folder = t
+	}
+}
+
+func NewTracer(opts ...Option) (hartracing.Tracer, io.Closer, error) {
 
 	const semLogContext = "file-har-tracer::new"
 
-	folder := os.Getenv(TargetFolderEnvName)
-	if folder == "" {
+	trcOpts := tracerOpts{}
+	for _, o := range opts {
+		o(&trcOpts)
+	}
+
+	if trcOpts.folder == "" {
+		trcOpts.folder = os.Getenv(TargetFolderEnvName)
+	}
+
+	if trcOpts.folder == "" {
 		err := fmt.Errorf("to properly use the tracer need to set the env-var %s with desired target folder", TargetFolderEnvName)
 		log.Error().Err(err).Str("env-var", TargetFolderEnvName).Msg(semLogContext)
 		return nil, nil, err
 	}
 
-	if folder == "" {
-		folder = "/tmp"
+	if !util.FolderExists(trcOpts.folder) {
+		err := fmt.Errorf("the target folder %s doesn't exist", trcOpts.folder)
+		log.Error().Err(err).Str("folder", trcOpts.folder).Msg(semLogContext)
+		return nil, nil, err
 	}
 
-	t := &tracerImpl{targetFolder: folder, outCh: make(chan *har.HAR, 10)}
+	t := &tracerImpl{targetFolder: trcOpts.folder, outCh: make(chan *har.HAR, 10)}
 	go t.processLoop()
 	return t, t, nil
 }

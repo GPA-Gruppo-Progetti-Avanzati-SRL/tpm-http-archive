@@ -82,7 +82,7 @@ func (hs *SimpleSpan) AddEntry(e *har.Entry) error {
 
 func (hs *SimpleSpan) GetHARData() (*har.HAR, error) {
 
-	const semLogContext = "log-Tracer-span::get-har-data"
+	const semLogContext = "log-tracer-span::get-har-data"
 	podName := os.Getenv("HOSTNAME")
 	if podName == "" {
 		log.Warn().Msg(semLogContext + " HOSTNAME env variable not set")

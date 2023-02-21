@@ -13,7 +13,7 @@ type nilSpanImpl struct {
 }
 
 func (hs *nilSpanImpl) Finish() error {
-	const semLogContext = "nil-har-tracer::span::finish"
+	const semLogContext = "nil-har-tracer::finish-span"
 	return nil
 }
 

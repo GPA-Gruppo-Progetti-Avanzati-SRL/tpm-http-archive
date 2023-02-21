@@ -12,7 +12,7 @@ type logZeroSpanImpl struct {
 
 func (hs *logZeroSpanImpl) Finish() error {
 
-	const semLogContext = "log-zero-har-tracer::span::finish"
+	const semLogContext = "log-zero-har-tracer::finish-span"
 
 	hs.Duration = time.Since(hs.StartTime)
 	if len(hs.Entries) > 0 {

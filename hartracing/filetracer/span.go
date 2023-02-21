@@ -11,7 +11,7 @@ type spanImpl struct {
 }
 
 func (hs *spanImpl) Finish() error {
-	const semLogContext = "file-har-tracer::span::finish"
+	const semLogContext = "file-har-tracer::finish-span"
 
 	hs.Duration = time.Since(hs.StartTime)
 	if len(hs.Entries) > 0 {
