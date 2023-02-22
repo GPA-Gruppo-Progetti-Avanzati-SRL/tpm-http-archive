@@ -64,6 +64,8 @@ func NewTracer(opts ...Option) (hartracing.Tracer, io.Closer, error) {
 	}
 
 	t := &tracerImpl{targetFolder: trcOpts.folder, outCh: make(chan *har.HAR, 10)}
+	log.Info().Str("tracer-type", HarFileTracerType).Str("folder", trcOpts.folder).Msg(semLogContext + " har tracer initialized")
+
 	go t.processLoop()
 	return t, t, nil
 }
