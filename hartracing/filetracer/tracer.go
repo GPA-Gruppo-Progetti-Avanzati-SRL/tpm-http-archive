@@ -17,6 +17,7 @@ import (
 
 const (
 	TargetFolderEnvName = "HAR_FILE_TRACER_FOLDER"
+	HarFileTracerType   = "har-file-tracer"
 )
 
 type tracerImpl struct {

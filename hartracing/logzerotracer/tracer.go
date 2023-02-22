@@ -11,6 +11,10 @@ import (
 	"time"
 )
 
+const (
+	HarLogZeroTracerType = "har-logzero-tracer"
+)
+
 type logZeroTracerImpl struct {
 }
 

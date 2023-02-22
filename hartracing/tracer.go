@@ -6,6 +6,7 @@ import (
 
 const (
 	HARTraceIdHeaderName = "har-trace-id"
+	HARTracerTypeEnvName = "HAR_TRACER_TYPE"
 )
 
 type Tracer interface {
