@@ -154,7 +154,7 @@ func (t *tracerImpl) processLoop() error {
 			}
 		}
 
-		fmt.Printf("writing %d bytes\n", len(b))
+		log.Trace().Int("bytes-written", len(b)).Msg(semLogContext)
 		err = os.WriteFile(fn, b, fs.ModePerm)
 		if err != nil {
 			log.Error().Err(err).Msg(semLogContext)
