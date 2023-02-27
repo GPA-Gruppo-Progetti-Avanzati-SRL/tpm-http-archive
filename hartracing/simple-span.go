@@ -14,6 +14,7 @@ type SimpleSpanContext struct {
 	LogId    string
 	ParentId string
 	TraceId  string
+	Flag     string
 }
 
 func (spanCtx SimpleSpanContext) Id() string {
@@ -21,17 +22,21 @@ func (spanCtx SimpleSpanContext) Id() string {
 }
 
 func (spanCtx SimpleSpanContext) Encode() string {
-	s := fmt.Sprintf("%s:%s:%s", spanCtx.LogId, spanCtx.ParentId, spanCtx.TraceId)
+	s := fmt.Sprintf("%s:%s:%s:%s", spanCtx.LogId, spanCtx.ParentId, spanCtx.TraceId, spanCtx.Flag)
 	return s
 }
 
 func (spanCtx SimpleSpanContext) IsZero() bool {
-	return spanCtx.LogId == "" && spanCtx.ParentId == "" && spanCtx.TraceId == ""
+	return spanCtx.LogId == "" && spanCtx.ParentId == "" && spanCtx.TraceId == "" && spanCtx.Flag == ""
+}
+
+func (spanCtx SimpleSpanContext) Sampled() bool {
+	return spanCtx.Flag == "1"
 }
 
 func ExtractSimpleSpanContextFromString(ser string) (SimpleSpanContext, error) {
 	sarr := strings.Split(ser, ":")
-	if len(sarr) != 3 {
+	if len(sarr) != 4 {
 		return SimpleSpanContext{}, fmt.Errorf("invalid span %s", ser)
 	}
 
@@ -39,6 +44,7 @@ func ExtractSimpleSpanContextFromString(ser string) (SimpleSpanContext, error) {
 		LogId:    sarr[0],
 		ParentId: sarr[1],
 		TraceId:  sarr[2],
+		Flag:     sarr[3],
 	}
 
 	return sctx, nil
@@ -67,6 +73,10 @@ func (hs *SimpleSpan) Id() string {
 
 func (hs *SimpleSpan) Context() SpanContext {
 	return hs.SpanContext
+}
+
+func (hs *SimpleSpan) Sampled() bool {
+	return hs.SpanContext.Sampled()
 }
 
 func (hs *SimpleSpan) String() string {

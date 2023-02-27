@@ -5,8 +5,11 @@ import (
 )
 
 const (
-	HARTraceIdHeaderName = "har-trace-id"
-	HARTracerTypeEnvName = "HAR_TRACER_TYPE"
+	HARTraceIdHeaderName       = "har-trace-id"
+	HARTracerTypeEnvName       = "HAR_TRACER_TYPE"
+	HARTraceOpenTracingTagName = "har.trace.id"
+	HARSpanFlagSampled         = "1"
+	HARSpanFlagUnSampled       = "0"
 )
 
 type Tracer interface {

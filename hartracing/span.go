@@ -13,6 +13,7 @@ type Span interface {
 	Context() SpanContext
 	AddEntry(e *har.Entry) error
 	Finish() error
+	Sampled() bool
 }
 
 type SpanOptions struct {
