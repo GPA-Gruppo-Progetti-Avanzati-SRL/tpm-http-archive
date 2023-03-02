@@ -16,6 +16,7 @@ type Tracer interface {
 	StartSpan(opts ...SpanOption) Span
 	Extract(format string, tmr TextMapReader) (SpanContext, error)
 	Inject(s SpanContext, tmr TextMapWriter) error
+	IsNil() bool
 }
 
 var globalTracer Tracer

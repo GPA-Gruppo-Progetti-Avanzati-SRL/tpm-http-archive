@@ -31,6 +31,10 @@ func (t *nilTracerImpl) Close() error {
 	return nil
 }
 
+func (t *nilTracerImpl) IsNil() bool {
+	return true
+}
+
 func (t *nilTracerImpl) StartSpan(opts ...SpanOption) Span {
 	const semLogContext = "nil-har-tracer::start-har-span"
 

@@ -27,6 +27,10 @@ func (t *logZeroTracerImpl) Close() error {
 	return nil
 }
 
+func (t *logZeroTracerImpl) IsNil() bool {
+	return true
+}
+
 func (t *logZeroTracerImpl) StartSpan(opts ...hartracing.SpanOption) hartracing.Span {
 	const semLogContext = "log-zero-har-tracer::start-har-span"
 

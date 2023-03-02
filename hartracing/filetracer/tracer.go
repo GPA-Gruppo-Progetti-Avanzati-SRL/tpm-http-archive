@@ -83,6 +83,10 @@ func (t *tracerImpl) Close() error {
 	return nil
 }
 
+func (t *tracerImpl) IsNil() bool {
+	return true
+}
+
 func (t *tracerImpl) StartSpan(opts ...hartracing.SpanOption) hartracing.Span {
 	const semLogContext = "file-har-tracer::start-har-span"
 
