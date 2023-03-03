@@ -274,6 +274,7 @@ func (po *PostData) MarshalJSON() ([]byte, error) {
 type Request struct {
 	Method      string         `json:"method,omitempty" yaml:"method,omitempty" mapstructure:"method,omitempty"`                // Request method (GET, POST, ...).
 	URL         string         `json:"url,omitempty" yaml:"url,omitempty" mapstructure:"url,omitempty"`                         // Absolute URL of the request (fragments are not included).
+	_PathParams []Param        `json:"_pathParams,omitempty" yaml:"_pathParams,omitempty" mapstructure:"_pathParams,omitempty"` // Absolute URL of the request (fragments are not included).
 	HTTPVersion string         `json:"httpVersion,omitempty" yaml:"httpVersion,omitempty" mapstructure:"httpVersion,omitempty"` // Request HTTP Version.
 	Cookies     []Cookie       `json:"cookies" yaml:"cookies" mapstructure:"cookies"`                                           // List of cookie objects.
 	Headers     NameValuePairs `json:"headers,omitempty" yaml:"headers,omitempty" mapstructure:"headers,omitempty"`             // List of header objects.
@@ -397,8 +398,7 @@ func (req *Request) SetHeader(n string, v string) {
 	})
 }
 
-// NewRequest introduced when migrating the tpm-symphony. Actually, in the original implementation it might had an issue due to the fact that it supposed that a body was always present and in case not
-// the body length was set to 0 and not to -1. This might lead an issue with the har-viewer.
+// NewRequest introduced when migrating the tpm-symphony. Revised the implementation to take care of different postData build
 func NewRequest(method string, url string, body []byte, headers http.Header, params []Param) (*Request, error) {
 
 	ct := headers.Get("content-type")
@@ -410,31 +410,42 @@ func NewRequest(method string, url string, body []byte, headers http.Header, par
 		}
 	}
 
-	if params == nil {
-		params = make([]Param, 0)
-	}
-
-	/*
-		pars := make([]Param, 0)
-		for _, h := range params {
-			pars = append(pars, Param{Name: h.Key, Value: h.Value})
-		}
-	*/
-
 	var postData *PostData
 	bodySize := -1
-	if len(body) > 0 {
-		bodySize = len(body)
-		postData = &PostData{
-			MimeType: ct,
-			Data:     body,
-			Params:   params,
+
+	switch method {
+	case http.MethodGet:
+		if len(params) != 0 {
+			postData = &PostData{
+				MimeType: "",
+				Data:     nil,
+				Params:   params,
+			}
+		}
+	case http.MethodPut:
+		fallthrough
+	case http.MethodPost:
+		if len(params) != 0 || len(body) > 0 {
+			if len(body) > 0 {
+				bodySize = len(body)
+			}
+
+			if params == nil {
+				params = make([]Param, 0)
+			}
+
+			postData = &PostData{
+				MimeType: ct,
+				Data:     body,
+				Params:   params,
+			}
 		}
 	}
 
 	req := &Request{
 		Method:      method,
 		URL:         url,
+		_PathParams: params,
 		HTTPVersion: "1.1",
 		Headers:     hs,
 		HeadersSize: -1,
