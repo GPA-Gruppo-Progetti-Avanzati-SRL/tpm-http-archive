@@ -274,7 +274,7 @@ func (po *PostData) MarshalJSON() ([]byte, error) {
 type Request struct {
 	Method      string         `json:"method,omitempty" yaml:"method,omitempty" mapstructure:"method,omitempty"`                // Request method (GET, POST, ...).
 	URL         string         `json:"url,omitempty" yaml:"url,omitempty" mapstructure:"url,omitempty"`                         // Absolute URL of the request (fragments are not included).
-	_PathParams []Param        `json:"_pathParams,omitempty" yaml:"_pathParams,omitempty" mapstructure:"_pathParams,omitempty"` // Absolute URL of the request (fragments are not included).
+	PathParams  []Param        `json:"_pathParams,omitempty" yaml:"_pathParams,omitempty" mapstructure:"_pathParams,omitempty"` // Absolute URL of the request (fragments are not included).
 	HTTPVersion string         `json:"httpVersion,omitempty" yaml:"httpVersion,omitempty" mapstructure:"httpVersion,omitempty"` // Request HTTP Version.
 	Cookies     []Cookie       `json:"cookies" yaml:"cookies" mapstructure:"cookies"`                                           // List of cookie objects.
 	Headers     NameValuePairs `json:"headers,omitempty" yaml:"headers,omitempty" mapstructure:"headers,omitempty"`             // List of header objects.
@@ -445,7 +445,7 @@ func NewRequest(method string, url string, body []byte, headers http.Header, par
 	req := &Request{
 		Method:      method,
 		URL:         url,
-		_PathParams: params,
+		PathParams:  params,
 		HTTPVersion: "1.1",
 		Headers:     hs,
 		HeadersSize: -1,
