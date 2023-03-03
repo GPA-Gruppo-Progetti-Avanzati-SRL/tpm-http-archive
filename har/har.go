@@ -399,8 +399,7 @@ func (req *Request) SetHeader(n string, v string) {
 
 // NewRequest introduced when migrating the tpm-symphony. Actually, in the original implementation it might had an issue due to the fact that it supposed that a body was always present and in case not
 // the body length was set to 0 and not to -1. This might lead an issue with the har-viewer.
-// params not used...actually and has been removed. It used to be a gin.Params item
-func NewRequest(method string, url string, body []byte, headers http.Header /*, params []Param*/) (*Request, error) {
+func NewRequest(method string, url string, body []byte, headers http.Header, params []Param) (*Request, error) {
 
 	ct := headers.Get("content-type")
 
@@ -411,11 +410,9 @@ func NewRequest(method string, url string, body []byte, headers http.Header /*, 
 		}
 	}
 
-	/*
-		if params == nil {
-			params = make([]Param, 0)
-		}
-	*/
+	if params == nil {
+		params = make([]Param, 0)
+	}
 
 	/*
 		pars := make([]Param, 0)
@@ -431,7 +428,7 @@ func NewRequest(method string, url string, body []byte, headers http.Header /*, 
 		postData = &PostData{
 			MimeType: ct,
 			Data:     body,
-			Params:   []Param{},
+			Params:   params,
 		}
 	}
 
