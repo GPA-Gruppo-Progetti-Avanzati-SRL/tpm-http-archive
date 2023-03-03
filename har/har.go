@@ -2,6 +2,8 @@ package har
 
 import (
 	"encoding/json"
+	"github.com/rs/zerolog/log"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -23,6 +25,10 @@ func (pii *PersonallyIdentifiableInformation) ShouldMaskRequest() bool {
 
 func (pii *PersonallyIdentifiableInformation) ShouldMaskResponse() bool {
 	return strings.Contains(pii.AppliesTo, "resp")
+}
+
+type PIIMasker interface {
+	Mask(domain string, data []byte) ([]byte, error)
 }
 
 // Cache contains info about a request coming from browser cache.
@@ -115,6 +121,37 @@ type Entry struct {
 	Comment         string                            `json:"comment,omitempty" yaml:"comment,omitempty" mapstructure:"comment,omitempty"`                         // A comment provided by the user or the application.
 	PII             PersonallyIdentifiableInformation `json:"_pii,omitempty"`                                                                                      // Extension field to identify sensistive information handling for logging
 	TraceId         string                            `json:"_trace-id,omitempty" yaml:"_trace-id,omitempty" mapstructure:"_trace-id,omitempty"`
+}
+
+func (e *Entry) MaskRequestBody(jm PIIMasker) error {
+
+	const semLogContext = "har::mask-request-body"
+	if jm != nil && e.PII.ShouldMaskRequest() && e.Request != nil && e.Request.HasBody() {
+		log.Trace().Str("comment", e.Comment).Msg(semLogContext)
+		masked, err := jm.Mask(e.PII.Domain, e.Request.PostData.Data)
+		if err != nil {
+			return err
+		}
+
+		e.Request.PostData.Data = masked
+	}
+
+	return nil
+}
+
+func (e *Entry) MaskResponseBody(jm PIIMasker) error {
+	const semLogContext = "har::mask-response-body"
+	if jm != nil && e.PII.ShouldMaskResponse() && e.Response != nil && e.Response.HasBody() {
+		log.Trace().Str("comment", e.Comment).Msg(semLogContext)
+		masked, err := jm.Mask(e.PII.Domain, e.Response.Content.Data)
+		if err != nil {
+			return err
+		}
+
+		e.Response.Content.Data = masked
+	}
+
+	return nil
 }
 
 // HAR parent container for HAR log.
@@ -360,6 +397,59 @@ func (req *Request) SetHeader(n string, v string) {
 	})
 }
 
+// NewRequest introduced when migrating the tpm-symphony. Actually, in the original implementation it might had an issue due to the fact that it supposed that a body was always present and in case not
+// the body length was set to 0 and not to -1. This might lead an issue with the har-viewer.
+// params not used...actually and has been removed. It used to be a gin.Params item
+func NewRequest(method string, url string, body []byte, headers http.Header /*, params []Param*/) (*Request, error) {
+
+	ct := headers.Get("content-type")
+
+	var hs []NameValuePair
+	for n, h := range headers {
+		for i := range h {
+			hs = append(hs, NameValuePair{Name: n, Value: h[i]})
+		}
+	}
+
+	/*
+		if params == nil {
+			params = make([]Param, 0)
+		}
+	*/
+
+	/*
+		pars := make([]Param, 0)
+		for _, h := range params {
+			pars = append(pars, Param{Name: h.Key, Value: h.Value})
+		}
+	*/
+
+	var postData *PostData
+	bodySize := -1
+	if len(body) > 0 {
+		bodySize = len(body)
+		postData = &PostData{
+			MimeType: ct,
+			Data:     body,
+			Params:   []Param{},
+		}
+	}
+
+	req := &Request{
+		Method:      method,
+		URL:         url,
+		HTTPVersion: "1.1",
+		Headers:     hs,
+		HeadersSize: -1,
+		Cookies:     []Cookie{},
+		QueryString: []NameValuePair{},
+		BodySize:    int64(bodySize),
+		PostData:    postData,
+	}
+
+	return req, nil
+}
+
 // Response contains detailed info about the response.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/HAR#type-Response
@@ -374,6 +464,10 @@ type Response struct {
 	HeadersSize int            `json:"headersSize" yaml:"headersSize" mapstructure:"headersSize"`                               // Total number of bytes from the start of the HTTP response message until (and including) the double CRLF before the body. Set to -1 if the info is not available.
 	BodySize    int64          `json:"bodySize" yaml:"bodySize" mapstructure:"bodySize"`                                        // Size of the received response body in bytes. Set to zero in case of responses coming from the cache (304). Set to -1 if the info is not available.
 	Comment     string         `json:"comment,omitempty" yaml:"comment,omitempty" mapstructure:"comment,omitempty"`             // A comment provided by the user or the application.
+}
+
+func (resp *Response) HasBody() bool {
+	return resp.Content != nil && len(resp.Content.Data) > 0
 }
 
 func NewResponse(sc int, sTest string, mimeType string, body []byte, headers NameValuePairs) *Response {
