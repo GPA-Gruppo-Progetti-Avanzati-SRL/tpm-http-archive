@@ -28,7 +28,7 @@ func (t *logZeroTracerImpl) Close() error {
 }
 
 func (t *logZeroTracerImpl) IsNil() bool {
-	return true
+	return false
 }
 
 func (t *logZeroTracerImpl) StartSpan(opts ...hartracing.SpanOption) hartracing.Span {
