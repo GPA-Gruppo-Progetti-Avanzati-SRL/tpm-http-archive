@@ -174,6 +174,17 @@ type Log struct {
 	TraceId string   `json:"_trace-id,omitempty" yaml:"_trace-id,omitempty" mapstructure:"_trace-id,omitempty"`
 }
 
+func (log *Log) FindEarliestStartedDateTime() string {
+	min := time.Now().Format(time.RFC3339Nano)
+	for _, e := range log.Entries {
+		if e.StartedDateTime != "" && e.StartedDateTime < min {
+			min = e.StartedDateTime
+		}
+	}
+
+	return min
+}
+
 type NameValuePairs []NameValuePair
 
 // NameValuePair describes a name/value pair.
