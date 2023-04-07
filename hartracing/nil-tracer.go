@@ -43,7 +43,7 @@ func (t *nilTracerImpl) StartSpan(opts ...SpanOption) Span {
 		o(&spanOpts)
 	}
 
-	oid := util.NewObjectId().String()
+	oid := util.NewTraceId()
 	spanCtx := SimpleSpanContext{LogId: oid, ParentId: oid, TraceId: oid, Flag: HARSpanFlagUnSampled}
 
 	if spanOpts.ParentContext != nil {

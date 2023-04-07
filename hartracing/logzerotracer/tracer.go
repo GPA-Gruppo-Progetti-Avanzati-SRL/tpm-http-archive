@@ -39,7 +39,7 @@ func (t *logZeroTracerImpl) StartSpan(opts ...hartracing.SpanOption) hartracing.
 		o(&spanOpts)
 	}
 
-	oid := util.NewObjectId().String()
+	oid := util.NewTraceId()
 	spanCtx := hartracing.SimpleSpanContext{LogId: oid, ParentId: oid, TraceId: oid, Flag: hartracing.HARSpanFlagSampled}
 
 	if spanOpts.ParentContext != nil {
