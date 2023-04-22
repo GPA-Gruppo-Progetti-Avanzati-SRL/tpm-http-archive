@@ -19,7 +19,7 @@ func (hs *logZeroSpanImpl) Finish() error {
 		log.Trace().Str("span-id", hs.Id()).Msg(semLogContext + " reporting span")
 		_ = hs.Tracer.(*logZeroTracerImpl).Report(hs)
 	} else {
-		log.Warn().Str("span-id", hs.Id()).Msg(semLogContext + " no Entries in span....")
+		log.Trace().Str("span-id", hs.Id()).Msg(semLogContext + " no Entries in span....")
 	}
 
 	return nil
