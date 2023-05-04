@@ -95,7 +95,7 @@ func (hs *SimpleSpan) GetHARData() (*har.HAR, error) {
 	const semLogContext = "log-tracer-span::get-har-data"
 	podName := os.Getenv("HOSTNAME")
 	if podName == "" {
-		log.Warn().Msg(semLogContext + " HOSTNAME env variable not set")
+		log.Info().Msg(semLogContext + " HOSTNAME env variable not set.... using localhost")
 		podName = "localhost"
 	}
 
