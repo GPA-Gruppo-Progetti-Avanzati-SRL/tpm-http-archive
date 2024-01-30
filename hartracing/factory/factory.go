@@ -20,6 +20,16 @@ func HarTracerTypeFromEnv() string {
 	return strings.ToLower(trcType)
 }
 
+func IsHarTracerTypeFromEnvSupported() bool {
+	const semLogContext = "har-tracing::is-type-from-env-supported"
+	trcType := HarTracerTypeFromEnv()
+	if trcType == "" {
+		log.Info().Msgf(semLogContext+" env var %s not set", hartracing.HARTracerTypeEnvName)
+	}
+
+	return trcType == filetracer.HarFileTracerType || trcType == logzerotracer.HarLogZeroTracerType
+}
+
 func InitHarTracingFromEnv() (io.Closer, error) {
 
 	const semLogContext = "har-tracing::init-from-env"
