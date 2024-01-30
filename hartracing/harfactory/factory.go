@@ -1,4 +1,4 @@
-package factory
+package harfactory
 
 import (
 	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-http-archive/hartracing"
