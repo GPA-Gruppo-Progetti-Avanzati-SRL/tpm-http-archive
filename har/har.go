@@ -127,7 +127,7 @@ type Entry struct {
 func (e *Entry) MaskRequestBody(jm PIIMasker) error {
 
 	const semLogContext = "har::mask-request-body"
-	if jm != nil && e.PII.ShouldMaskRequest() && e.Request != nil && e.Request.HasBody() {
+	if !util.IsNilish(jm) && e.PII.ShouldMaskRequest() && e.Request != nil && e.Request.HasBody() {
 		log.Trace().Str("comment", e.Comment).Msg(semLogContext)
 		masked, err := jm.Mask(e.PII.Domain, e.Request.PostData.Data)
 		if err != nil {
