@@ -2,6 +2,7 @@ package har
 
 import (
 	"encoding/json"
+	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-common/util"
 	"github.com/rs/zerolog/log"
 	"net/http"
 	"strconv"
@@ -141,7 +142,8 @@ func (e *Entry) MaskRequestBody(jm PIIMasker) error {
 
 func (e *Entry) MaskResponseBody(jm PIIMasker) error {
 	const semLogContext = "har::mask-response-body"
-	if jm != nil && e.PII.ShouldMaskResponse() && e.Response != nil && e.Response.HasBody() {
+
+	if !util.IsNilish(jm) && e.PII.ShouldMaskResponse() && e.Response != nil && e.Response.HasBody() {
 		log.Trace().Str("comment", e.Comment).Msg(semLogContext)
 		masked, err := jm.Mask(e.PII.Domain, e.Response.Content.Data)
 		if err != nil {
