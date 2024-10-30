@@ -382,6 +382,12 @@ func WithHeader(h NameValuePair) RequestOption {
 	}
 }
 
+func WithQueryParam(q NameValuePair) RequestOption {
+	return func(o *Request) {
+		o.QueryString = append(o.QueryString, q)
+	}
+}
+
 func (req *Request) HasBody() bool {
 	return req.PostData != nil && len(req.PostData.Data) > 0
 }
