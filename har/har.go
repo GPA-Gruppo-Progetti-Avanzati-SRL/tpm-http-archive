@@ -418,10 +418,13 @@ func (req *Request) SetHeader(n string, v string) {
 }
 
 // NewRequest introduced when migrating the tpm-symphony. Revised the implementation to take care of different postData build
-func NewRequest(method string, url string, body []byte, headers http.Header, params []Param) (*Request, error) {
+func NewRequest(method string, url string, body []byte, headers http.Header, queryParams NameValuePairs, params []Param) (*Request, error) {
 
 	ct := headers.Get("content-type")
 
+	if queryParams == nil {
+		queryParams = NameValuePairs{}
+	}
 	var hs []NameValuePair
 	for n, h := range headers {
 		for i := range h {
@@ -469,7 +472,7 @@ func NewRequest(method string, url string, body []byte, headers http.Header, par
 		Headers:     hs,
 		HeadersSize: -1,
 		Cookies:     []Cookie{},
-		QueryString: []NameValuePair{},
+		QueryString: queryParams,
 		BodySize:    int64(bodySize),
 		PostData:    postData,
 	}
