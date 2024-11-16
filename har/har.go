@@ -1,9 +1,11 @@
 package har
 
 import (
+	"bytes"
 	"encoding/json"
 	"github.com/GPA-Gruppo-Progetti-Avanzati-SRL/tpm-common/util"
 	"github.com/rs/zerolog/log"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -498,6 +500,53 @@ type Response struct {
 
 func (resp *Response) HasBody() bool {
 	return resp.Content != nil && len(resp.Content.Data) > 0
+}
+
+func NewResponseFromHttpResponse(resp *http.Response) (*Response, error) {
+	const semLogContext = "http-archive::har-response-from-http-response"
+	var err error
+
+	ct := "appication/octet-stream"
+	headers := make([]NameValuePair, 0)
+	for n, h := range resp.Header {
+		for _, v := range h {
+			headers = append(headers, NameValuePair{Name: n, Value: v})
+			if strings.ToLower(n) == "content-type" {
+				ct = v
+			}
+		}
+	}
+
+	var bodyContent []byte
+	if resp.ContentLength > 0 {
+
+		bodyContent, err = io.ReadAll(resp.Body)
+		log.Trace().Msgf(semLogContext+" - Lunghezza body :  %d, - Body : %s ,", len(bodyContent), string(bodyContent))
+		if err != nil {
+			log.Error().Err(err).Msg(semLogContext)
+			return nil, err
+		}
+
+		// Put back for subsequent uses
+		resp.Body = io.NopCloser(bytes.NewReader(bodyContent))
+	}
+
+	r := &Response{
+		Status:      resp.StatusCode,
+		HTTPVersion: "1.1",
+		StatusText:  resp.Status,
+		HeadersSize: -1,
+		Headers:     headers,
+		Cookies:     []Cookie{},
+		BodySize:    int64(len(bodyContent)),
+		Content: &Content{
+			MimeType: ct,
+			Size:     int64(len(bodyContent)),
+			Data:     bodyContent,
+		},
+	}
+
+	return r, nil
 }
 
 func NewResponse(sc int, sTest string, mimeType string, body []byte, headers NameValuePairs) *Response {
