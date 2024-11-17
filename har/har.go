@@ -435,7 +435,8 @@ func NewRequestFromHttpRequest(req *http.Request) (*Request, error) {
 	}
 
 	var bodyContent []byte
-	if req.ContentLength > 0 {
+	log.Trace().Int64("content-length", req.ContentLength).Bool("body-not-null", req.Body != nil).Msgf(semLogContext)
+	if req.Body != nil /* req.ContentLength > 0 */ {
 
 		bodyContent, err = io.ReadAll(req.Body)
 		log.Trace().Msgf(semLogContext+" - Lunghezza body :  %d, - Body : %s ,", len(bodyContent), string(bodyContent))
@@ -562,6 +563,7 @@ func NewResponseFromHttpResponse(resp *http.Response) (*Response, error) {
 	}
 
 	var bodyContent []byte
+	log.Trace().Int64("content-length", resp.ContentLength).Bool("body-not-null", resp.Body != nil).Msgf(semLogContext)
 	if resp.Body != nil /* resp.ContentLength > 0 */ {
 
 		bodyContent, err = io.ReadAll(resp.Body)
