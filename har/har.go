@@ -419,6 +419,50 @@ func (req *Request) SetHeader(n string, v string) {
 	})
 }
 
+func NewRequestFromHttpRequest(req *http.Request) (*Request, error) {
+	const semLogContext = "http-archive::har-request-from-http-request"
+	var err error
+
+	ct := "appication/octet-stream"
+	headers := make([]NameValuePair, 0)
+	for n, h := range req.Header {
+		for _, v := range h {
+			headers = append(headers, NameValuePair{Name: n, Value: v})
+			if strings.ToLower(n) == "content-type" {
+				ct = v
+			}
+		}
+	}
+
+	var bodyContent []byte
+	if req.ContentLength > 0 {
+
+		bodyContent, err = io.ReadAll(req.Body)
+		log.Trace().Msgf(semLogContext+" - Lunghezza body :  %d, - Body : %s ,", len(bodyContent), string(bodyContent))
+		if err != nil {
+			log.Error().Err(err).Msg(semLogContext)
+			return nil, err
+		}
+
+		// Put back for subsequent uses
+		req.Body = io.NopCloser(bytes.NewReader(bodyContent))
+	}
+
+	r := &Request{
+		HTTPVersion: "1.1",
+		HeadersSize: -1,
+		Headers:     headers,
+		Cookies:     []Cookie{},
+		BodySize:    int64(len(bodyContent)),
+		PostData: &PostData{
+			MimeType: ct,
+			Data:     bodyContent,
+		},
+	}
+
+	return r, nil
+}
+
 // NewRequest introduced when migrating the tpm-symphony. Revised the implementation to take care of different postData build
 func NewRequest(method string, url string, body []byte, headers http.Header, queryParams NameValuePairs, params []Param) (*Request, error) {
 
@@ -518,7 +562,7 @@ func NewResponseFromHttpResponse(resp *http.Response) (*Response, error) {
 	}
 
 	var bodyContent []byte
-	if resp.ContentLength > 0 {
+	if resp.Body != nil /* resp.ContentLength > 0 */ {
 
 		bodyContent, err = io.ReadAll(resp.Body)
 		log.Trace().Msgf(semLogContext+" - Lunghezza body :  %d, - Body : %s ,", len(bodyContent), string(bodyContent))
