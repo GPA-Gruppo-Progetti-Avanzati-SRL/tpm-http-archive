@@ -1,7 +1,7 @@
 package hartracing
 
 import (
-	"golang.org/x/net/context"
+	"context"
 )
 
 const (
